@@ -6,6 +6,10 @@ require "ask/monitoring/metrics/response_time"
 module Ask
   module Monitoring
     class DashboardController < ::ApplicationController
+      # When requested from a Turbo Frame, render only the frame content
+      # (no layout) for efficient partial updates.
+      layout -> { turbo_frame_request? ? false : "application" }
+
       def index
         @time_range  = parse_time_range
         @provider    = params[:provider]
@@ -20,6 +24,8 @@ module Ask
         @throughput_metric = Metrics::Throughput.new(base)
         @error_metric      = Metrics::ErrorCount.new(base)
         @response_metric   = Metrics::ResponseTime.new(base)
+
+        # Must use same turbo_frame_tag ID from the view
       end
 
       def metrics

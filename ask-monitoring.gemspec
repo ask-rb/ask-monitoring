@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.summary = "LLM monitoring dashboard for Rails"
   spec.description = "Rails engine that provides real-time monitoring for LLM usage. " \
                      "Cost tracking, throughput metrics, error rates, response times. " \
-                     "Alert channels (Slack, email, webhook). " \
+                     "Slack alerts. Real-time updates via Hotwire Turbo. " \
                      "Works with any ask-rb provider via ask-instrumentation events."
   spec.homepage = "https://github.com/ask-rb/ask-monitoring"
   spec.license = "MIT"
@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rails", ">= 7.1"
   spec.add_dependency "groupdate", "~> 6.0"
   spec.add_dependency "importmap-rails", "~> 2.0"
+  spec.add_dependency "turbo-rails", "~> 2.0"
 
   spec.add_development_dependency "minitest", "~> 5.25"
   spec.add_development_dependency "rake", "~> 13.0"

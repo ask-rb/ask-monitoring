@@ -1,0 +1,68 @@
+<div class="ask-monitoring">
+  <div class="ask-monitoring__header">
+    <h1>LLM Monitoring</h1>
+    <%= form_tag ask_monitoring.dashboard_path, method: :get, class: "ask-monitoring__filters" do %>
+      <%= select_tag :since, options_for_select([
+        ["Last hour", "1h"],
+        ["Last 24 hours", "24h"],
+        ["Last 7 days", "7d"],
+        ["Last 30 days", "30d"]
+      ], params[:since] || "1h"), onchange: "this.form.submit()" %>
+
+      <%= select_tag :provider, options_for_select(
+        Ask::Event.distinct.pluck(:provider).compact, params[:provider]
+      ), prompt: "All providers", onchange: "this.form.submit()", class: "ask-monitoring__filter" %>
+
+      <%= select_tag :model, options_for_select(
+        Ask::Event.distinct.pluck(:model).compact, params[:model]
+      ), prompt: "All models", onchange: "this.form.submit()", class: "ask-monitoring__filter" %>
+    <% end %>
+  </div>
+
+  <div class="ask-monitoring__cards">
+    <div class="ask-monitoring__card">
+      <div class="ask-monitoring__card-label">Total Cost</div>
+      <div class="ask-monitoring__card-value">
+        $<%= number_with_precision(@cost_metric.as_chart_data.sum { |d| d[:value] }, precision: 2) %>
+      </div>
+    </div>
+
+    <div class="ask-monitoring__card">
+      <div class="ask-monitoring__card-label">Requests</div>
+      <div class="ask-monitoring__card-value">
+        <%= @events.count %>
+      </div>
+    </div>
+
+    <div class="ask-monitoring__card ask-monitoring__card--<%= @error_metric.rate > 0.05 ? 'error' : 'ok' %>">
+      <div class="ask-monitoring__card-label">Error Rate</div>
+      <div class="ask-monitoring__card-value">
+        <%= number_to_percentage(@error_metric.rate * 100, precision: 1) %>
+      </div>
+    </div>
+
+    <div class="ask-monitoring__card">
+      <div class="ask-monitoring__card-label">Response Time (p50)</div>
+      <div class="ask-monitoring__card-value">
+        <%= number_with_precision(@response_metric.percentiles[:p50], precision: 0) %>ms
+      </div>
+    </div>
+  </div>
+
+  <div class="ask-monitoring__charts">
+    <div class="ask-monitoring__chart" id="chart-cost" data-metric="cost">
+      <h3>Cost Over Time</h3>
+      <div class="ask-monitoring__chart-body"><%= @cost_metric.as_chart_data.to_json %></div>
+    </div>
+
+    <div class="ask-monitoring__chart" id="chart-throughput" data-metric="throughput">
+      <h3>Throughput</h3>
+      <div class="ask-monitoring__chart-body"><%= @throughput_metric.as_chart_data.to_json %></div>
+    </div>
+
+    <div class="ask-monitoring__chart" id="chart-errors" data-metric="error_count">
+      <h3>Errors</h3>
+      <div class="ask-monitoring__chart-body"><%= @error_metric.as_chart_data.to_json %></div>
+    </div>
+  </div>
+</div>

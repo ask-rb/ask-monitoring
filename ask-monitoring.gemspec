@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir["{app,config,db,lib}/**/*", "LICENSE", "README.md", "CHANGELOG.md"]
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "ask-instrumentation", "~> 0.1"
+  spec.add_dependency "ask-instrumentation", ">= 0.1"
   spec.add_dependency "rails", ">= 7.1"
   spec.add_dependency "groupdate", "~> 6.0"
   spec.add_dependency "importmap-rails", "~> 2.0"

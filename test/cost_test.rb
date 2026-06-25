@@ -50,3 +50,27 @@ class CostTest < Minitest::Test
     assert_equal 0.0, cost
   end
 end
+
+  def test_nil_tokens_returns_zero
+    cost = Ask::Monitoring::Cost.for("openai/gpt-4", tokens: nil)
+    assert_equal 0.0, cost
+  end
+
+  def test_string_model_key
+    cost = Ask::Monitoring::Cost.for("openai/gpt-4", tokens: { input: 100, output: 50 })
+    assert cost > 0
+  end
+
+  def test_custom_pricing_resets
+    Ask::Monitoring::Cost.register("temp/model", input: 1.0, output: 2.0)
+    cost1 = Ask::Monitoring::Cost.for("temp/model", tokens: { input: 1, output: 1 })
+    assert cost1 > 0
+  end
+
+  def test_register_twice_updates
+    Ask::Monitoring::Cost.register("dup/model", input: 0.01, output: 0.02)
+    Ask::Monitoring::Cost.register("dup/model", input: 0.02, output: 0.03)
+    cost = Ask::Monitoring::Cost.for("dup/model", tokens: { input: 1000, output: 1000 })
+    expected = (1000.0 / 1000 * 0.02) + (1000.0 / 1000 * 0.03)
+    assert_in_delta expected, cost, 0.0001
+  end

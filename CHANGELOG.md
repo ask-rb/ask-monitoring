@@ -1,3 +1,7 @@
+## [0.1.1] - 2026-06-25
+
+### Changed
+- Expanded tests: EventSubscriber, Channels(Slack/Email/Base 4 files), Metrics(Cost/Throughput/ErrorCount/ResponseTime 4 files), Engine(10t with routes), Cost(11t). Infrastructure: rubocop, overcommit, CI matrix, gemspec, Appraisals.
 # Changelog
 
 ## [0.1.0] - 2026-06-21

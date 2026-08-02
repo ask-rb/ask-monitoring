@@ -3,9 +3,7 @@
 [![Gem Version](https://badge.fury.io/rb/ask-monitoring.svg)](https://badge.fury.io/rb/ask-monitoring)
 [![CI](https://github.com/ask-rb/ask-monitoring/actions/workflows/ci.yml/badge.svg)](https://github.com/ask-rb/ask-monitoring/actions/workflows/ci.yml)
 
-LLM monitoring dashboard for Rails. Tracks cost, throughput, error rates, and
-response times for all LLM calls in your application. **Real-time updates via
-Hotwire Turbo** — metrics auto-refresh every 30 seconds. Slack alerts.
+LLM monitoring dashboard for Rails. Tracks cost, throughput, error rates, and response times for all LLM calls in your application. Real-time updates via Hotwire Turbo: metrics auto-refresh every 30 seconds. Slack and email alerts.
 
 Works with any LLM provider via `ask-instrumentation` events.
 
@@ -27,9 +25,7 @@ Then visit `/ask/monitoring`.
 
 ### Real-Time Updates
 
-The dashboard uses Hotwire Turbo to auto-refresh every 30 seconds — no Redis,
-no ActionCable, no JavaScript framework needed. Turbo Frames intercept the
-refresh and smoothly morph in updated metrics without a full page reload.
+The dashboard uses Hotwire Turbo to auto-refresh every 30 seconds, with no Redis, no ActionCable, and no JavaScript framework needed. Turbo Frames intercept the refresh and morph in updated metrics without a full page reload.
 
 ### Metrics
 
@@ -51,8 +47,7 @@ Ask::Monitoring::Cost.for("openai/gpt-4", tokens: { input: 100, output: 50 })
 # => 0.006 (USD)
 ```
 
-Built-in pricing for 22+ models across OpenAI, Anthropic, Google, Mistral,
-Cohere, and Bedrock.
+Built-in pricing for 22 models across OpenAI, Anthropic, Google, Mistral, Cohere, and Bedrock.
 
 ### Custom Pricing
 
@@ -72,13 +67,14 @@ Ask::Monitoring.configure do |config|
 end
 ```
 
-Slack alerts use Incoming Webhooks:
+Alert channels:
 
 ```ruby
-Ask::Monitoring::Channels::Slack.new(
-  webhook_url: ENV["SLACK_WEBHOOK_URL"]
-).deliver(alert)
+Ask::Monitoring::Channels::Slack.new(webhook_url: ENV["SLACK_WEBHOOK_URL"]).deliver(alert)
+Ask::Monitoring::Channels::Email.new(from: "ops@example.com", to: "team@example.com").deliver(alert)
 ```
+
+`config.alert_cooldown` (default 300 seconds) sets the minimum time between repeated alerts from the same rule; each rule can override it with a `cooldown:` option.
 
 ## Schema
 
@@ -92,8 +88,12 @@ Ask::Monitoring::Channels::Slack.new(
 | `output_tokens` | integer | Output token count |
 | `cost` | decimal | Calculated cost in USD |
 | `error` | text | Error message (if any) |
-| `metadata` | jsonb | Context from `with_metadata` |
+| `metadata` | jsonb | Context from `Ask::Instrumentation.current_metadata` |
 | `created_at` | timestamp | When the event occurred |
+
+## Full documentation
+
+The full ask-rb documentation lives at https://ask-rb.github.io/ask-docs. [Production monitoring](https://ask-rb.github.io/ask-docs/production/monitoring) covers ask-monitoring in depth. API reference: https://ask-rb.github.io/ask-docs/reference/api.
 
 ## Development
 

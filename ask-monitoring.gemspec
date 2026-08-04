@@ -25,7 +25,9 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "ask-instrumentation", ">= 0.1"
   spec.add_dependency "rails", ">= 7.1"
-  spec.add_dependency "groupdate", "~> 6.0"
+  # groupdate 6.8.0 requires Ruby >= 3.3; cap below it to keep the
+  # advertised >= 3.2 support.
+  spec.add_dependency "groupdate", ">= 6.0", "< 6.8"
   spec.add_dependency "importmap-rails", "~> 2.0"
   spec.add_dependency "turbo-rails", "~> 2.0"
 
